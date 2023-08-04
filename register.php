@@ -79,7 +79,7 @@ else
         elseif($success_message !== '')
         {
             echo $success_message . "<br><br>";
-        }
+        }   
     ?>
 
     <form action="" method="post">
