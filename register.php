@@ -8,60 +8,63 @@ $errors = '';
 
 $success_message = '';
 
-if(isset($_POST['register']) && 
-    !empty(trim($_POST['user_name']))&& 
+if(isset($_POST['register']))
+{ 
+    if(!empty(trim($_POST['user_name']))&& 
     !empty(trim($_POST['user_email']))&& 
     !empty(trim($_POST['user_password'])))
-{
-    session_start();
-
-    if(isset($_SESSION['user_data']))
     {
-        header('Location: chatroom.php');
-    }
 
-    require_once('database/ChatUser.php');
+        session_start();
 
-    $user = new ChatUser();
-
-    $user->setUserName($_POST['user_name']);
-
-    $user->setUserEmail($_POST['user_email']);
-
-    $user->setUserPassword($_POST['user_password']);
-
-    $user->setUserProfile($user->createAvatar(strtoupper($_POST['user_name'][0])));
-
-    $user->setUserStatus('Disabled');
-
-    $user->setUserCreatedOn(date('d.m.Y H:i'));
-
-    $user->setUserVerificationCode(md5(uniqid()));
-
-    $user_data = $user->getUserDataByEmail();
-
-    if(is_array($user_data) && count($user_data) > 0)
-    {
-        $errors = 'This Email is already registered';
-    }
-    else
-    {
-        if($user->saveData())
+        if(isset($_SESSION['user_data']))
         {
-            $success_message = 'Registration completed';
+            header('Location: chatroom.php');
+        }
+
+        require_once('database/ChatUser.php');
+
+        $user = new ChatUser();
+
+        $user->setUserName($_POST['user_name']);
+
+        $user->setUserEmail($_POST['user_email']);
+
+        $user->setUserPassword($_POST['user_password']);
+
+        $user->setUserProfile($user->createAvatar(strtoupper($_POST['user_name'][0])));
+
+        $user->setUserStatus('Disabled');
+
+        $user->setUserCreatedOn(date('Y.m.d H:i:s'));
+
+        $user->setUserVerificationCode(md5(uniqid()));
+
+        $user_data = $user->getUserDataByEmail();
+
+        if(is_array($user_data) && count($user_data) > 0)
+        {
+            $errors = 'This Email is already registered';
         }
         else
         {
-            $errors = 'Something went wrong';
+            if($user->saveData())
+            {
+                $success_message = 'Registration completed';
+            }
+            else
+            {
+                $errors = 'Something went wrong';
+            }
         }
     }
+    else
+    {
+        $errors = 'Please, enter every field';
+    }
 }
-else
-{
-    $errors = 'Please, enter every field';
-}
-?>
 
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -75,10 +78,12 @@ else
         if($errors !== '')
         {
             echo $errors . "<br><br>";
+            $errors = '';
         }
         elseif($success_message !== '')
         {
             echo $success_message . "<br><br>";
+            $success_message = '';
         }   
     ?>
 
