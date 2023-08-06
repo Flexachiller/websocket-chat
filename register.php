@@ -1,5 +1,12 @@
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exceptions;
+
+require 'vendor/autoload.php';
+
+
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_setup_errors', 1);
@@ -50,7 +57,27 @@ if(isset($_POST['register']))
         {
             if($user->saveData())
             {
-                $success_message = 'Registration completed';
+                $mail = new PHPMailer(true);
+                $mail->isSMTP();
+                $mail->Host = 'ssl://smtp.yandex.ru'; 
+                $mail->SMTPAuth = true;
+                $mail->Username = 'krishtalev2017r';
+                $mail->Password = 'ksixcjzxwhsydunq';
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                $mail->Port = 465;
+                //
+                $mail->setFrom('krishtalev2017r@yandex.ru', 'flexachiller');
+                $mail->addAddress($user->getUserEmail());
+                $mail->isHTML(true);
+                $mail->Subject = 'Registration Verification for Chat';
+                $mail->Body = '
+                            <p>Thank you for registration for Chat app</p>
+                            <p>This is a verification email.  Please, click the link to verify your email address.</p>
+                            <p><a href="http://localhost:8080/websocket-chat/verify.php?code=' . $user->getUserVerificationCode() . '">Click to Verify</a></p>
+                            ';
+                $mail->send();
+
+                $success_message = 'Verification code sent to ' . $user->getUserEmail() . 'Please, verify it before login';
             }
             else
             {
