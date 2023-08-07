@@ -2,6 +2,7 @@
 
 class ChatUser
 {
+    private $user_id;
     private $user_email;
     private $user_name;
     private $user_password;
@@ -19,6 +20,16 @@ class ChatUser
         $database = new DatabaseConnection();
 
         $this->connect = $database->connect();
+    }
+
+    public function setUserId($user_id)
+    {
+        $this->user_id = $user_id;
+    }
+
+    public function getUserId($user_id)
+    {
+        return $this->user_id;
     }
 
     public function setUserName($user_name)
@@ -122,6 +133,8 @@ class ChatUser
 
     public function getUserDataByEmail()
     {
+        $user_data = null;
+        
         $query = "
                 SELECT * FROM chat_user_table
                 WHERE user_email = :user_email
@@ -213,6 +226,30 @@ class ChatUser
         $statement->bindParam(':user_verification_code', $this->user_verification_code);
         $statement->bindParam(':user_status', $this->user_status);
 
+        if($statement->execute())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public function updateUserLoginData()
+    {
+        $query = "
+                UPDATE chat_user_table
+                SET user_login_status = :user_login_status
+                WHERE user_id = :user_id
+                ";
+
+        $statement = $this->connect->prepare($query);
+
+        $statement->bindParam(':user_login_status', $this->user_login_status);
+
+        $statement->bindParam(':user_id', $this->user_id);
+        
         if($statement->execute())
         {
             return true;
