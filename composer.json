@@ -1,5 +1,11 @@
 {
+    "autoload": {
+        "psr-4": {
+            "Flexachiller\\WebsocketChat\\": "src/"
+        }
+    },
     "require": {
-        "phpmailer/phpmailer": "^6.8"
+        "phpmailer/phpmailer": "^6.8",
+        "cboden/ratchet": "*"
     }
 }

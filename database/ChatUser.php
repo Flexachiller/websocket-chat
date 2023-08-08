@@ -260,7 +260,67 @@ class ChatUser
         }
     }
 
+    public function getUserDataById()
+    {
+        $query = "
+                SELECT * FROM chat_user_table 
+                WHERE user_id = :user_id
+                ";
+        
+        $statement = $this->connect->prepare($query);
+        $statement->bindParam(':user_id', $this->user_id);
+        
+        $user_data = array();
+        
+        if($statement->execute())
+        {
+            $user_data = $statement->fetch(PDO::FETCH_ASSOC);
+        }
+        
+        return $user_data;
+    }
 
+    public function uploadImage($user_profile)
+    {
+        $extension = explode('.', $user_profile['name']);
+        $new_name = rand() . '.' . $extension[1];
+        $destination = 'images/' . $new_name;
+        move_uploaded_file($user_profile['tmp_name'], $destination);
+        return $destination;
+    }
+
+    public function updateData()
+    {
+        $query = "
+                UPDATE chat_user_table
+                SET user_name = :user_name,
+                user_email = :user_email,
+                user_password = :user_password,
+                user_profile = :user_profile
+                WHERE user_id = :user_id
+                ";
+
+        $statement = $this->connect->prepare($query);
+        $params = [
+            ':user_name'=> $this->user_name,
+            ':user_email'=> $this->user_email,
+            ':user_password'=> $this->user_password,
+            ':user_profile'=> $this->user_profile,
+            ':user_id'=> $this->user_id
+        ];
+        foreach ($params as $key => &$value) {
+            $statement->bindParam($key, $value);
+        }
+
+        if($statement->execute())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
 
 
