@@ -14,6 +14,23 @@ if(!isset($_SESSION['user_data']))
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 </head>
 <body>
+
+    <div>
+        <div>
+            Chat room
+        </div>
+        <div>
+
+        </div>
+        <form method="post" id="chat_form">
+            <div>
+                <textarea name="chat" id="chat_message" cols="30" rows="10" placeholder="Type message"></textarea>
+            </div>
+            <button type="submit" name="send">Send</button>
+            <div id="validation_error"></div>
+        </form>
+    </div>
+
     <?php
         $user_login_id = '';
 
@@ -33,7 +50,7 @@ if(!isset($_SESSION['user_data']))
     ?>
     <script>
         $(document).ready(function(){
-            var conn = new WebSocket('ws://localhost:8080');
+            var conn = new WebSocket('ws://localhost:9004');
             conn.onopen = function(e) {
                 console.log("Connection established!");
             };
@@ -41,6 +58,25 @@ if(!isset($_SESSION['user_data']))
             conn.onmessage = function(e) {
                 console.log(e.data);
             };
+
+            $('$chat_form').on('submit', function(event){
+                event.preventDefault();
+
+                var user_id = $('#login_user_id').val();
+
+				var message = $('#chat_message').val();
+
+				var data = {
+					userId : user_id,
+					msg : message
+				};
+
+				conn.send(JSON.stringify(data));
+
+				$('#messages_area').scrollTop($('#messages_area')[0].scrollHeight);
+
+            });
+
             $('#logout').click(function(){
 
             user_id = $('#login_user_id').val();

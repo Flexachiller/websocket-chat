@@ -12,7 +12,7 @@ use Flexachiller\WebsocketChat\Chat;
                 new Chat()
             )
         ),
-        8080
+        9004
     );
 
     $server->run();
